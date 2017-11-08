@@ -4,6 +4,7 @@
 package com.java.concurrent.streams.channel.exceptions;
 
 /**
+ * Exception thrown during Channel read write operations
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */
@@ -16,7 +17,7 @@ public class ChannelIOException extends Exception {
 
 	/**
 	 * Constructor
-	 * @param message
+	 * @param message Exception message
 	 */
 	public ChannelIOException(String message) {
 		super(message);
@@ -24,7 +25,7 @@ public class ChannelIOException extends Exception {
 
 	/**
 	 * Constructor
-	 * @param cause
+	 * @param cause Exception throwing clause
 	 */
 	public ChannelIOException(Throwable cause) {
 		super(cause);
@@ -32,8 +33,8 @@ public class ChannelIOException extends Exception {
 
 	/**
 	 * Constructor
-	 * @param message
-	 * @param cause
+	 * @param message Exception message
+	 * @param cause Exception throwing clause
 	 */
 	public ChannelIOException(String message, Throwable cause) {
 		super(message, cause);

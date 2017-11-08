@@ -10,8 +10,9 @@ import com.java.concurrent.streams.channel.exceptions.ChannelInstanceException;
 import com.java.concurrent.streams.channel.exceptions.DuplicatedObjectException;
 
 /**
+ * Registry for collecting and providing Concurrent Channels
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
- *
+ * @see Channel
  */
 public class ChannelsRegistry {
 	

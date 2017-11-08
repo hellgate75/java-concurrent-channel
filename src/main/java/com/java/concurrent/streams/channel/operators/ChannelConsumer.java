@@ -10,5 +10,9 @@ package com.java.concurrent.streams.channel.operators;
  * @param <T> Consume Type
  */
 public interface ChannelConsumer<T> {
+	/**
+	 * Consumer elements from Channel
+	 * @param t Element to be consumed
+	 */
 	void consume(T t);
 }

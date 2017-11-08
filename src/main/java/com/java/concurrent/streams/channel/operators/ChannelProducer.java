@@ -20,8 +20,8 @@ public interface ChannelProducer<T> {
 	 * Add a single value to Channel
 	 * @param t single value
 	 * @return insert status
-	 * @throws ChannelNullableAssignementException
-	 * @throws ChannelIOException
+	 * @throws ChannelNullableAssignementException Thrown when element is null
+	 * @throws ChannelIOException Thrown when errors occurs during insert operations
 	 */
 	boolean add(T t) throws ChannelNullableAssignementException, ChannelIOException;
 
@@ -29,8 +29,8 @@ public interface ChannelProducer<T> {
 	 * Add an array of values to Channel
 	 * @param t array of values
 	 * @return number of added elements
-	 * @throws ChannelNullableAssignementException
-	 * @throws ChannelIOException
+	 * @throws ChannelNullableAssignementException Thrown when array is null
+	 * @throws ChannelIOException Thrown when errors occurs during insert operations
 	 */
 	@SuppressWarnings("unchecked")
 	long add(T ...t) throws ChannelNullableAssignementException, ChannelIOException;
@@ -39,8 +39,8 @@ public interface ChannelProducer<T> {
 	 * Add a collection of values to Channel
 	 * @param collection collection of values
 	 * @return number of added elements
-	 * @throws ChannelNullableAssignementException
-	 * @throws ChannelIOException
+	 * @throws ChannelNullableAssignementException Thrown when collection is null
+	 * @throws ChannelIOException Thrown when errors occurs during insert operations
 	 */
 	long add(Collection<T> collection) throws ChannelNullableAssignementException, ChannelIOException;
 }

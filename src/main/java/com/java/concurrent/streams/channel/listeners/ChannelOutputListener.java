@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.java.concurrent.streams.channel.listener;
+package com.java.concurrent.streams.channel.listeners;
 
 /**
  * Interface that define behavior of Queue New Element Insert

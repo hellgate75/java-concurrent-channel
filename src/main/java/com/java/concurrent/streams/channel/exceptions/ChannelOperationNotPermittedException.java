@@ -4,6 +4,8 @@
 package com.java.concurrent.streams.channel.exceptions;
 
 /**
+ * Exception thrown during Channel operations, when using features not yet implemented or 
+ * suspended for review
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */
@@ -16,7 +18,7 @@ public class ChannelOperationNotPermittedException extends Exception {
 
 	/**
 	 * Constructor
-	 * @param message
+	 * @param message Exception message
 	 */
 	public ChannelOperationNotPermittedException(String message) {
 		super(message);
@@ -24,7 +26,7 @@ public class ChannelOperationNotPermittedException extends Exception {
 
 	/**
 	 * Constructor
-	 * @param cause
+	 * @param cause Exception throwing clause
 	 */
 	public ChannelOperationNotPermittedException(Throwable cause) {
 		super(cause);
@@ -32,8 +34,8 @@ public class ChannelOperationNotPermittedException extends Exception {
 
 	/**
 	 * Constructor
-	 * @param message
-	 * @param cause
+	 * @param message Exception message
+	 * @param cause Exception throwing clause
 	 */
 	public ChannelOperationNotPermittedException(String message, Throwable cause) {
 		super(message, cause);
