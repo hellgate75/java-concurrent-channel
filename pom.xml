@@ -7,7 +7,9 @@
 	<packaging>pom</packaging>
 	<name>Concurrent Stream Libraries</name>
 	<modules>
+		<module>bom</module>
 		<module>common</module>
 		<module>channel</module>
+		<module>files</module>
 	</modules>
 </project>

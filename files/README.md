@@ -1,19 +1,12 @@
-# Java Concurrent Channel
+# Java Concurrent File Lib
 
 ## What's in the box
 
-Java Concurrent Parametric Channel library providing simple interfaces for :
+Java Concurrent File library providing :
 
 
-* Listen on new Channel Insert/Reject
-* Listen on new Channel Dequeue
-* Asynchronous thread for managing consumers compliant to provided interface
-* Registry association, for recovering Channels in static context
-* Channel implements a Producer interface, useful for down casting instances
-
-
-All elements can be overloaded with multiple instances. Channel class use Concurrent Non-Blocking Queue for allowing extreme multi-threading.
-
+* Flat File Reader and Writer
+* Item File Reader and Writer
 
 
 

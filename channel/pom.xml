@@ -15,23 +15,22 @@
 		<skip.unit.tests>false</skip.unit.tests>
 		<skip.integration.tests>false</skip.integration.tests>
 
-		<sfl4j.version>1.7.25</sfl4j.version>
 		<log4j-sfl4j.version>2.9.1</log4j-sfl4j.version>
-		<reflections.version>0.9.11</reflections.version>
 	</properties>
 
 	<dependencies>
+		<!-- BOM -->
+		<dependency>
+			<groupId>com.concurrent.utils.streams</groupId>
+			<artifactId>bom</artifactId>
+			<type>pom</type>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- Common -->
 		<dependency>
 			<groupId>com.concurrent.utils.streams</groupId>
 			<artifactId>common</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<!-- Logger -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${sfl4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

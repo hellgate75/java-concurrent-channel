@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.concurrent.utils.streams</groupId>
-	<artifactId>common</artifactId>
+	<artifactId>files</artifactId>
 	<version>1.0.0</version>
-	<name>Concurrent Common Library</name>
+	<name>Concurrent Files Library</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -12,8 +12,8 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<skip.unit.tests>true</skip.unit.tests>
-		<skip.integration.tests>true</skip.integration.tests>
+		<skip.unit.tests>false</skip.unit.tests>
+		<skip.integration.tests>false</skip.integration.tests>
 
 		<log4j-sfl4j.version>2.9.1</log4j-sfl4j.version>
 	</properties>
@@ -25,6 +25,12 @@
 			<artifactId>bom</artifactId>
 			<version>${project.version}</version>
 			<type>pom</type>
+		</dependency>
+		<!-- Common -->
+		<dependency>
+			<groupId>com.concurrent.utils.streams</groupId>
+			<artifactId>common</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -70,10 +76,7 @@
 							<propertyName>surefireArgLine</propertyName>
 							<!-- Exclude of out scope artifacts in Preparation -->
 							<excludes>
-								<exclude>**/common/*.java</exclude>
-								<exclude>**/bahaviors/*.java</exclude>
-								<exclude>**/exceptions/*.java</exclude>
-								<exclude>**/operators/*.java</exclude>
+								<exclude>**/behaviors/*.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -93,10 +96,7 @@
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 							<!-- Exclude of out scope artifacts in Report -->
 							<excludes>
-								<exclude>**/common/*.java</exclude>
-								<exclude>**/bahaviors/*.java</exclude>
-								<exclude>**/exceptions/*.java</exclude>
-								<exclude>**/operators/*.java</exclude>
+								<exclude>**/behaviors/*.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -111,10 +111,7 @@
 					<instrumentation>
 							<!-- Exclude of out scope artifacts in Cobertura Report -->
 						<excludes>
-								<exclude>**/common/*.class</exclude>
-								<exclude>**/bahaviors/*.class</exclude>
-							<exclude>**/exceptions/*.class</exclude>
-							<exclude>**/operators/*.class</exclude>
+							<exclude>**/behaviors/*.class</exclude>
 						</excludes>
 							<!-- Ignores of out scope components, sub-components and methods -->
 						<!-- <ignores>

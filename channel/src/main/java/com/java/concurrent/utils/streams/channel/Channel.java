@@ -3,8 +3,10 @@
  */
 package com.java.concurrent.utils.streams.channel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -14,13 +16,14 @@ import org.slf4j.LoggerFactory;
 
 import com.java.concurrent.utils.streams.channel.listeners.ChannelInputListener;
 import com.java.concurrent.utils.streams.channel.listeners.ChannelOutputListener;
-import com.java.concurrent.utils.streams.common.StreamConsumer;
-import com.java.concurrent.utils.streams.common.StreamFilter;
-import com.java.concurrent.utils.streams.common.StreamProducer;
+import com.java.concurrent.utils.streams.common.StreamReader;
+import com.java.concurrent.utils.streams.common.StreamWriter;
+import com.java.concurrent.utils.streams.common.behaviors.StreamConsumer;
+import com.java.concurrent.utils.streams.common.behaviors.StreamFilter;
+import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
 import com.java.concurrent.utils.streams.common.exceptions.StreamIOException;
 import com.java.concurrent.utils.streams.common.exceptions.StreamInstanceException;
 import com.java.concurrent.utils.streams.common.exceptions.StreamNullableAssignementException;
-import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
 
 /**
  * Parametric Concurrent Non-Blocking Channel stream. It implements Producer behavior, to provide abstraction level Producer capabilities.<br><br>
@@ -33,12 +36,13 @@ import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectExcep
  * 
  * @see ChannelsRegistry
  * @see StreamConsumer
- * @see StreamProducer
+ * @see StreamReader
+ * @see StreamWriter
  * @see StreamFilter
  * @see ChannelOutputListener
  * @see ChannelInputListener
  */
-public class Channel<T> implements StreamProducer<T> {
+public class Channel<T> implements StreamReader<T>, StreamWriter<T> {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Channel.class);
 	
@@ -226,10 +230,10 @@ public class Channel<T> implements StreamProducer<T> {
 
 
 	/* (non-Javadoc)
-	 * @see com.streams.channel.operators.ChannelProducer#add(java.lang.Object)
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.lang.Object)
 	 */
 	@Override
-	public boolean add(T t) throws StreamNullableAssignementException, StreamIOException {
+	public boolean write(T t) throws StreamNullableAssignementException, StreamIOException {
 		if (t==null) {
 			throw new StreamNullableAssignementException("Forbidden registration of nullable element");
 		}
@@ -254,11 +258,10 @@ public class Channel<T> implements StreamProducer<T> {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.streams.channel.operators.ChannelProducer#add(java.lang.Object[])
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.lang.Object[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public long add(T ...t) throws StreamNullableAssignementException, StreamIOException {
+	public long write(@SuppressWarnings("unchecked") T ...t) throws StreamNullableAssignementException, StreamIOException {
 		if (t==null) {
 			throw new StreamNullableAssignementException("Forbidden registration of nullable element list");
 		}
@@ -272,10 +275,10 @@ public class Channel<T> implements StreamProducer<T> {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.streams.channel.operators.ChannelProducer#add(java.util.Collection)
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.util.Collection)
 	 */
 	@Override
-	public long add(Collection<T> collection) throws StreamNullableAssignementException, StreamIOException {
+	public long write(Collection<T> collection) throws StreamNullableAssignementException, StreamIOException {
 		if (collection==null) {
 			throw new StreamNullableAssignementException("Forbidden registration of nullable collection");
 		}
@@ -290,7 +293,7 @@ public class Channel<T> implements StreamProducer<T> {
 	
 	private void addToQueue(T v, AtomicLong counter) {
 		try {
-			if ( add(v) ) {
+			if ( write(v) ) {
 				counter.incrementAndGet();
 			}
 		} catch (Exception e) {
@@ -317,12 +320,11 @@ public class Channel<T> implements StreamProducer<T> {
 	}
 
 
-	/**
-	 * Poll an element from queue
-	 * @return
-	 * @throws StreamIOException
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#read()
 	 */
-	public T poll() throws StreamIOException {
+	@Override
+	public T read() throws StreamIOException {
 		T t = null;
 		if ( ( ( t = this.channelQueue.poll() ) != null) ) {
 			totalConsumedElements.incrementAndGet();
@@ -331,10 +333,22 @@ public class Channel<T> implements StreamProducer<T> {
 		throw new StreamIOException("Channel is Empty");
 	}
 
-	/**
-	 * Retrieve Channel is empty
-	 * @return Empty state
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#readAll()
 	 */
+	@Override
+	public List<T> readAll() throws StreamIOException {
+		List<T> elements = new ArrayList<>(0);
+		while (! isEmpty()) {
+			elements.add(this.read());
+		}
+		return elements;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#isEmpty()
+	 */
+	@Override
 	public boolean isEmpty() {
 		return this.channelQueue.isEmpty();
 	}
@@ -364,27 +378,19 @@ public class Channel<T> implements StreamProducer<T> {
 	}
 
 
-	/**
-	 * Start Channel Consume Thread
-	 * @throws StreamIOException Throw if there is no Consumer in Channel output operations
-	 */
-	public void start() throws StreamIOException {
+	@Override
+	public void open() throws StreamIOException {
 		this.totalConsumedElements.set(0L);
 		thread.startConsuming();
 	}
 	
-	/**
-	 * Retrieve if Channel Consume Thread is Running
-	 * @return Channel Consume Thread is Running
-	 */
-	public boolean running() {
+	@Override
+	public boolean isOpen() {
 		return thread.isRunning();
 	}
 	
-	/**
-	 * Stop Channel Consume Thread if running
-	 */
-	public void stop() {
+	@Override
+	public void close() throws StreamIOException {
 		thread.stopConsuming();
 	}
 	

@@ -5,8 +5,10 @@
 Java Concurrent libraries components, reported in following modules :
 
 
+* [Library dependencies](/bom)
 * [Concurrent Common](/common)
 * [Concurrent Channel](/channel)
+* [Concurrent File Utilities](/files)
 
 
 

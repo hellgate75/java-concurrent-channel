@@ -1,13 +1,13 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.common;
+package com.java.concurrent.utils.streams.common.behaviors;
 
 /**
  * Stream filter  behavior descriptor, it is used to filter wanted and unwanted object saved in Stream
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  * 
- * @param <T> Consume Type
+ * @param <T> Filter Type
  */
 public interface StreamFilter<T> {
 	/**

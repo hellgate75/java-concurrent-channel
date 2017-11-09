@@ -5,9 +5,9 @@ package com.java.concurrent.utils.streams.channel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +25,15 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.java.concurrent.utils.streams.channel.Channel;
-import com.java.concurrent.utils.streams.channel.ChannelsRegistry;
 import com.java.concurrent.utils.streams.channel.listeners.ChannelInputListener;
 import com.java.concurrent.utils.streams.channel.listeners.ChannelOutputListener;
-import com.java.concurrent.utils.streams.common.StreamConsumer;
-import com.java.concurrent.utils.streams.common.StreamFilter;
-import com.java.concurrent.utils.streams.common.StreamProducer;
+import com.java.concurrent.utils.streams.common.StreamWriter;
+import com.java.concurrent.utils.streams.common.behaviors.StreamConsumer;
+import com.java.concurrent.utils.streams.common.behaviors.StreamFilter;
+import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
 import com.java.concurrent.utils.streams.common.exceptions.StreamIOException;
 import com.java.concurrent.utils.streams.common.exceptions.StreamInstanceException;
 import com.java.concurrent.utils.streams.common.exceptions.StreamNullableAssignementException;
-import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
 
 /**
  * Testing Channel Element
@@ -64,7 +62,7 @@ public class ChannelUnitTest {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String value=null;
-		channel.add(value);
+		channel.write(value);
 	}
 	
 	@Test(expected=StreamIOException.class)
@@ -77,7 +75,7 @@ public class ChannelUnitTest {
 			return !t.contains("9");
 		});
 		String value="";
-		channel.add(value);
+		channel.write(value);
 		
 	}
 	
@@ -86,7 +84,7 @@ public class ChannelUnitTest {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		List<String> valueList = null;
-		channel.add(valueList);
+		channel.write(valueList);
 		
 	}
 	
@@ -107,7 +105,7 @@ public class ChannelUnitTest {
 		String value=null;
 		List<String> valueList = new ArrayList<String>(0);
 		valueList.add(value);
-		channel.add(valueList);
+		channel.write(valueList);
 	}
 	
 	@Test(expected=StreamNullableAssignementException.class)
@@ -115,7 +113,7 @@ public class ChannelUnitTest {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String[] value=null;
-		channel.add(value);
+		channel.write(value);
 		
 	}
 	
@@ -129,7 +127,7 @@ public class ChannelUnitTest {
 			return !t.contains("9");
 		});
 		String value=null;
-		channel.add(new String[] {value});
+		channel.write(new String[] {value});
 	}
 	
 	@Test()
@@ -137,8 +135,8 @@ public class ChannelUnitTest {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String value="A";
-		channel.add(new String[] {value});
-		assertEquals("Polled value must be same than the added one","A", channel.poll());
+		channel.write(new String[] {value});
+		assertEquals("Polled value must be same than the added one","A", channel.read());
 		assertTrue("Channel is Empty", channel.isEmpty());
 	}
 	
@@ -147,7 +145,7 @@ public class ChannelUnitTest {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		assertTrue("Channel is Empty", channel.isEmpty());
-		assertEquals("Polled value must be same than the added one","A", channel.poll());
+		assertEquals("Polled value must be same than the added one","A", channel.read());
 	}
 	
 	@Test()
@@ -155,7 +153,7 @@ public class ChannelUnitTest {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String value="A";
-		channel.add(new String[] {value});
+		channel.write(new String[] {value});
 		List<String> retainList = new ArrayList<>(0);
 		retainList.add("B");
 		channel.retainAll(retainList);
@@ -254,8 +252,8 @@ public class ChannelUnitTest {
 			}
 		};
 		channel.addConsumer(consumer);
-		channel.start();
-		assertTrue("Consumer Thread Must be running", channel.running());
+		channel.open();
+		assertTrue("Consumer Thread Must be running", channel.isOpen());
 		try {
 			// Delay that allows Channel to flush all pending elements 
 			// into the Channel Concurrent Queue
@@ -263,7 +261,7 @@ public class ChannelUnitTest {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
-		channel.stop();
+		channel.close();
 		try {
 			// Delay that allows Channel to flush all pending elements 
 			// into the Channel Concurrent Queue
@@ -430,8 +428,8 @@ public class ChannelUnitTest {
 				// This is not part of test
 			}
 		});
-		channel.start();
-		assertTrue("Consumer Thread Must be running", channel.running());
+		channel.open();
+		assertTrue("Consumer Thread Must be running", channel.isOpen());
 		try {
 			// Delay that allows Channel to flush all pending elements 
 			// into the Channel Concurrent Queue
@@ -439,7 +437,7 @@ public class ChannelUnitTest {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
-		channel.stop();
+		channel.close();
 		try {
 			// Delay that allows Channel to flush all pending elements 
 			// into the Channel Concurrent Queue
@@ -541,23 +539,23 @@ public class ChannelUnitTest {
 		.collect(Collectors.toList());
 	}
 	
-	private <T> void runThreadsOnProducer(StreamProducer<String> producer, int numberOfLines, int numberOfProcesses) {
+	private <T> void runThreadsOnProducer(StreamWriter<String> producer, int numberOfLines, int numberOfProcesses) {
 		ExecutorService executor = Executors.newCachedThreadPool();
 		  for (int i = 0; i < numberOfProcesses; i++) executor.execute(() -> {
 			  try {
-				producer.add(produceTestData(numberOfLines));
+				producer.write(produceTestData(numberOfLines));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		  });
 	}
 
-	private <T> void runThreadsOnProducerForArray(StreamProducer<String> producer, int numberOfLines, int numberOfProcesses) {
+	private <T> void runThreadsOnProducerForArray(StreamWriter<String> producer, int numberOfLines, int numberOfProcesses) {
 		ExecutorService executor = Executors.newCachedThreadPool();
 		  for (int i = 0; i < numberOfProcesses; i++) executor.execute(() -> {
 			  try {
 				  List<String> list = produceTestData(numberOfLines);
-				producer.add(list.toArray(new String[list.size()]));
+				producer.write(list.toArray(new String[list.size()]));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

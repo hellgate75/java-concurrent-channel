@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.common;
+package com.java.concurrent.utils.streams.common.behaviors;
 
 import java.util.Collection;
 

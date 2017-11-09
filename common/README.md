@@ -22,6 +22,7 @@ To include and use current library you need:
 * Java 8+
 * SFL4J implementation dependency, for logging purposes
 * Maven 3.x+
+* [BOM module](/bom)
 
 
 
