@@ -1,12 +1,20 @@
-# Java Stream Libs
+# Java Concurrent Channel
 
 ## What's in the box
 
-Java Concurrent libraries components, reported in following modules :
+Java Concurrent Parametric Channel library providing simple interfaces for :
 
 
-* [Concurrent Channel](/channel)
+* Listen on new Channel Insert/Reject
+* Listen on new Channel Dequeue
+* Filer Channel elements, accepting or rejecting elements during Channel insert operation
+* Asynchronous thread for managing consumers compliant to provided interface
+* Registry association, for recovering Channels in static context
+* Channel implements a Producer interface, useful for down casting instances
+* Consumer interface for consuming behalf Consumer Thread
 
+
+All elements can be overloaded with multiple instances. Channel class use Concurrent Non-Blocking Queue for allowing extreme multi-threading.
 
 
 
