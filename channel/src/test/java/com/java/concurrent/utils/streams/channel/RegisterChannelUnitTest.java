@@ -16,8 +16,8 @@ import org.junit.runners.MethodSorters;
 
 import com.java.concurrent.utils.streams.channel.Channel;
 import com.java.concurrent.utils.streams.channel.ChannelsRegistry;
-import com.java.concurrent.utils.streams.channel.exceptions.ChannelInstanceException;
-import com.java.concurrent.utils.streams.channel.exceptions.DuplicatedObjectException;
+import com.java.concurrent.utils.streams.common.exceptions.StreamInstanceException;
+import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
 
 /**
  * Testing Channel Registry Helper
@@ -31,22 +31,22 @@ public class RegisterChannelUnitTest {
 
 	
 	@Test()
-	public void testRegistryCannelRegister() throws ChannelInstanceException, DuplicatedObjectException {
+	public void testRegistryCannelRegister() throws StreamInstanceException, DuplicatedObjectException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, "fakeName");
 		assertEquals("Registered Channel must match with opted-in one", channel, ChannelsRegistry.get().getChannel("fakeName"));
 	}
 
-	@Test(expected=ChannelInstanceException.class)
-	public void testRegistryCannelRegisterChannelInstanceExceptionCauseByChannel() throws ChannelInstanceException, DuplicatedObjectException {
+	@Test(expected=StreamInstanceException.class)
+	public void testRegistryCannelRegisterChannelInstanceExceptionCauseByChannel() throws StreamInstanceException, DuplicatedObjectException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		ChannelsRegistry.get().registerChannel(null, "fakeName");
 		assertNull("Registered Channel must be NULL",ChannelsRegistry.get().getChannel("fakeName"));
 	}
 
-	@Test(expected=ChannelInstanceException.class)
-	public void testRegistryCannelRegisterChannelInstanceExceptionCauseByName() throws ChannelInstanceException, DuplicatedObjectException {
+	@Test(expected=StreamInstanceException.class)
+	public void testRegistryCannelRegisterChannelInstanceExceptionCauseByName() throws StreamInstanceException, DuplicatedObjectException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, null);
@@ -54,7 +54,7 @@ public class RegisterChannelUnitTest {
 	}
 
 	@Test(expected=DuplicatedObjectException.class)
-	public void testRegistryCannelRegisterDuplicatedObjectException() throws ChannelInstanceException, DuplicatedObjectException {
+	public void testRegistryCannelRegisterDuplicatedObjectException() throws StreamInstanceException, DuplicatedObjectException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, "fakeName");
@@ -63,7 +63,7 @@ public class RegisterChannelUnitTest {
 	}
 
 	@Test()
-	public void testRegistryChannelUnRegisterExistingChannel() throws ChannelInstanceException, DuplicatedObjectException {
+	public void testRegistryChannelUnRegisterExistingChannel() throws StreamInstanceException, DuplicatedObjectException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, "fakeName");
@@ -72,7 +72,7 @@ public class RegisterChannelUnitTest {
 	}
 
 	@Test()
-	public void testRegistryChannelUnRegisterNotExistingChannel() throws ChannelInstanceException, DuplicatedObjectException {
+	public void testRegistryChannelUnRegisterNotExistingChannel() throws StreamInstanceException, DuplicatedObjectException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		assertNull("No Channel was opted-in one", ChannelsRegistry.get().getChannel("fakeName"));
 		assertFalse("Channel must be removed correctly", ChannelsRegistry.get().unregisterChannel("fakeName"));

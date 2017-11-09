@@ -1,10 +1,10 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.channel.exceptions;
+package com.java.concurrent.utils.streams.common.exceptions;
 
 /**
- * Exception thrown during Channel Registry opt-in, and provided Channel name is already in use 
+ * Exception thrown during opt-in or creation operations, and provided element already apted-in 
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */

@@ -12,33 +12,33 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.java.concurrent.utils.streams.channel.exceptions.ChannelIOException;
-import com.java.concurrent.utils.streams.channel.exceptions.ChannelInstanceException;
-import com.java.concurrent.utils.streams.channel.exceptions.ChannelNullableAssignementException;
-import com.java.concurrent.utils.streams.channel.exceptions.DuplicatedObjectException;
 import com.java.concurrent.utils.streams.channel.listeners.ChannelInputListener;
 import com.java.concurrent.utils.streams.channel.listeners.ChannelOutputListener;
-import com.java.concurrent.utils.streams.channel.operators.ChannelConsumer;
-import com.java.concurrent.utils.streams.channel.operators.ChannelFilter;
-import com.java.concurrent.utils.streams.channel.operators.ChannelProducer;
+import com.java.concurrent.utils.streams.common.StreamConsumer;
+import com.java.concurrent.utils.streams.common.StreamFilter;
+import com.java.concurrent.utils.streams.common.StreamProducer;
+import com.java.concurrent.utils.streams.common.exceptions.StreamIOException;
+import com.java.concurrent.utils.streams.common.exceptions.StreamInstanceException;
+import com.java.concurrent.utils.streams.common.exceptions.StreamNullableAssignementException;
+import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
 
 /**
  * Parametric Concurrent Non-Blocking Channel stream. It implements Producer behavior, to provide abstraction level Producer capabilities.<br><br>
  * This component has been designed to supply java missing of counter-part Go Language channel type, within more Java Object Oriented capabilities.<br><br>
  * This demo version count offered and consumed elements with scale of {@link Long} scale. It will early released a more efficient and capable version in a production branch.<br><br>
- * This version is provided of a Consumer Thread that can be manually activated, because it requires presence of at least one {@link ChannelConsumer} registered in the Channel output operations.
+ * This version is provided of a Consumer Thread that can be manually activated, because it requires presence of at least one {@link StreamConsumer} registered in the Channel output operations.
  * 
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  * @param <T> Type for channel
  * 
  * @see ChannelsRegistry
- * @see ChannelConsumer
- * @see ChannelProducer
- * @see ChannelFilter
+ * @see StreamConsumer
+ * @see StreamProducer
+ * @see StreamFilter
  * @see ChannelOutputListener
  * @see ChannelInputListener
  */
-public class Channel<T> implements ChannelProducer<T> {
+public class Channel<T> implements StreamProducer<T> {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Channel.class);
 	
@@ -52,9 +52,9 @@ public class Channel<T> implements ChannelProducer<T> {
 
 	private final ConcurrentLinkedQueue<ChannelOutputListener<T>> outputListeners = new ConcurrentLinkedQueue<>();
 
-	private final ConcurrentLinkedQueue<ChannelConsumer<T>> consumers = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<StreamConsumer<T>> consumers = new ConcurrentLinkedQueue<>();
 
-	private final ConcurrentLinkedQueue<ChannelFilter<T>> filters = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<StreamFilter<T>> filters = new ConcurrentLinkedQueue<>();
 	
 	protected Class<T> type;
 	
@@ -77,10 +77,10 @@ public class Channel<T> implements ChannelProducer<T> {
 	 * Constructor used to create and Store Channel in the {@link ChannelsRegistry}
 	 * @param name Registry entry name
 	 * @param type Channel Objects type
-	 * @throws ChannelInstanceException Thrown when Name is inappropriate for Registry
+	 * @throws StreamInstanceException Thrown when Name is inappropriate for Registry
 	 * @throws DuplicatedObjectException Thrown when try to register a Channel with an already used name
 	 */
-	private Channel(String name, Class<T> type) throws ChannelInstanceException, DuplicatedObjectException {
+	private Channel(String name, Class<T> type) throws StreamInstanceException, DuplicatedObjectException {
 		this(type);
 		channelName = name;
 		ChannelsRegistry.get().registerChannel(this, name);
@@ -89,13 +89,13 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Add a filter to the channel input operations
 	 * @param filter Filter to add the queue input operations
-	 * @throws ChannelNullableAssignementException Thrown when provided filter is null
+	 * @throws StreamNullableAssignementException Thrown when provided filter is null
 	 * @throws DuplicatedObjectException Throw when the  filter is registered twice
-	 * @see ChannelFilter
+	 * @see StreamFilter
 	 */
-	public void addChannelFilter(ChannelFilter<T> filter) throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void addFilter(StreamFilter<T> filter) throws StreamNullableAssignementException, DuplicatedObjectException {
 		if (filter==null) {
-			throw new ChannelNullableAssignementException("Forbidden registration of nullable filters");
+			throw new StreamNullableAssignementException("Forbidden registration of nullable filters");
 		}
 		if (filters.contains(filter)) {
 			throw new DuplicatedObjectException("This listener has been already registered");
@@ -106,12 +106,12 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Remove a filter from the channel input operations
 	 * @param filter Filter to remove from the queue input operations
-	 * @throws ChannelNullableAssignementException Thrown when provided filter is null
-	 * @see ChannelFilter
+	 * @throws StreamNullableAssignementException Thrown when provided filter is null
+	 * @see StreamFilter
 	 */
-	public void removeChannelFilter(ChannelFilter<T> filter) throws ChannelNullableAssignementException {
+	public void removeFilter(StreamFilter<T> filter) throws StreamNullableAssignementException {
 		if (filter==null) {
-			throw new ChannelNullableAssignementException("Forbidden unregistration of nullable filters");
+			throw new StreamNullableAssignementException("Forbidden unregistration of nullable filters");
 		}
 		filters.remove(filter);
 	}
@@ -119,13 +119,13 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Add a consumer to the channel output operations
 	 * @param consumer Consumer to add the queue output operations
-	 * @throws ChannelNullableAssignementException Thrown when provided consumer is null
+	 * @throws StreamNullableAssignementException Thrown when provided consumer is null
 	 * @throws DuplicatedObjectException Throw when the  lister is registered twice
-	 * @see ChannelConsumer
+	 * @see StreamConsumer
 	 */
-	public void addChannelConsumer(ChannelConsumer<T> consumer) throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void addConsumer(StreamConsumer<T> consumer) throws StreamNullableAssignementException, DuplicatedObjectException {
 		if (consumer==null) {
-			throw new ChannelNullableAssignementException("Forbidden registration of nullable consumers");
+			throw new StreamNullableAssignementException("Forbidden registration of nullable consumers");
 		}
 		if (consumers.contains(consumer)) {
 			throw new DuplicatedObjectException("This consumer has been already registered");
@@ -136,12 +136,12 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Remove a consumer from the channel output operations
 	 * @param consumer Consumer to be registered to output operations
-	 * @throws ChannelNullableAssignementException Thrown when provided consumer is null
-	 * @see ChannelConsumer
+	 * @throws StreamNullableAssignementException Thrown when provided consumer is null
+	 * @see StreamConsumer
 	 */
-	public void removeChannelConsumer(ChannelConsumer<T> consumer) throws ChannelNullableAssignementException {
+	public void removeConsumer(StreamConsumer<T> consumer) throws StreamNullableAssignementException {
 		if (consumer==null) {
-			throw new ChannelNullableAssignementException("Forbidden unregistration of nullable consumers");
+			throw new StreamNullableAssignementException("Forbidden unregistration of nullable consumers");
 		}
 		consumers.remove(consumer);
 	}
@@ -150,13 +150,13 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Add a channel input listener to the channel input operations
 	 * @param listener channel input listener to add to the channel input  operations
-	 * @throws ChannelNullableAssignementException Thrown when provided listener is null
+	 * @throws StreamNullableAssignementException Thrown when provided listener is null
 	 * @throws DuplicatedObjectException Throw when the  lister is registered twice
 	 * @see ChannelInputListener
 	 */
-	public void addChannelInputListener(ChannelInputListener<T> listener) throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void addChannelInputListener(ChannelInputListener<T> listener) throws StreamNullableAssignementException, DuplicatedObjectException {
 		if (listener==null) {
-			throw new ChannelNullableAssignementException("Forbidden registration of nullable input listener");
+			throw new StreamNullableAssignementException("Forbidden registration of nullable input listener");
 		}
 		if (inputListeners.contains(listener)) {
 			throw new DuplicatedObjectException("This input listener has been already registered");
@@ -167,12 +167,12 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Remove a channel input listener from the channel input operations
 	 * @param listener Channel input listener to be registered to input operations
-	 * @throws ChannelNullableAssignementException Thrown when provided listener is null
+	 * @throws StreamNullableAssignementException Thrown when provided listener is null
 	 * @see ChannelInputListener
 	 */
-	public void removeChannelInputListener(ChannelInputListener<T> listener) throws ChannelNullableAssignementException {
+	public void removeChannelInputListener(ChannelInputListener<T> listener) throws StreamNullableAssignementException {
 		if (listener==null) {
-			throw new ChannelNullableAssignementException("Forbidden unregistration of nullable input listener");
+			throw new StreamNullableAssignementException("Forbidden unregistration of nullable input listener");
 		}
 		inputListeners.remove(listener);
 	}
@@ -180,13 +180,13 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Add a channel output listener to the channel output operations
 	 * @param listener channel output listener to add to the channel output  operations
-	 * @throws ChannelNullableAssignementException Thrown when provided listener is null
+	 * @throws StreamNullableAssignementException Thrown when provided listener is null
 	 * @throws DuplicatedObjectException Throw when the  lister is registered twice
 	 * @see ChannelOutputListener
 	 */
-	public void addChannelOutputListener(ChannelOutputListener<T> listener) throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void addChannelOutputListener(ChannelOutputListener<T> listener) throws StreamNullableAssignementException, DuplicatedObjectException {
 		if (listener==null) {
-			throw new ChannelNullableAssignementException("Forbidden registration of nullable output listener");
+			throw new StreamNullableAssignementException("Forbidden registration of nullable output listener");
 		}
 		if (outputListeners.contains(listener)) {
 			throw new DuplicatedObjectException("This output listener has been already registered");
@@ -197,12 +197,12 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Remove a channel output listener from the channel output operations
 	 * @param listener Channel output listener to be registered to output operations
-	 * @throws ChannelNullableAssignementException Thrown when provided listener is null
+	 * @throws StreamNullableAssignementException Thrown when provided listener is null
 	 * @see ChannelOutputListener
 	 */
-	public void removeChannelOutputListener(ChannelOutputListener<T> listener) throws ChannelNullableAssignementException {
+	public void removeChannelOutputListener(ChannelOutputListener<T> listener) throws StreamNullableAssignementException {
 		if (listener==null) {
-			throw new ChannelNullableAssignementException("Forbidden unregistration of nullable output listener");
+			throw new StreamNullableAssignementException("Forbidden unregistration of nullable output listener");
 		}
 		outputListeners.remove(listener);
 	}
@@ -229,9 +229,9 @@ public class Channel<T> implements ChannelProducer<T> {
 	 * @see com.streams.channel.operators.ChannelProducer#add(java.lang.Object)
 	 */
 	@Override
-	public boolean add(T t) throws ChannelNullableAssignementException, ChannelIOException {
+	public boolean add(T t) throws StreamNullableAssignementException, StreamIOException {
 		if (t==null) {
-			throw new ChannelNullableAssignementException("Forbidden registration of nullable element");
+			throw new StreamNullableAssignementException("Forbidden registration of nullable element");
 		}
 		try {
 			long results = this.filters.stream()
@@ -249,7 +249,7 @@ public class Channel<T> implements ChannelProducer<T> {
 				return false;
 			}
 		} catch (Exception e) {
-			throw new ChannelIOException("Unable to add value", e);
+			throw new StreamIOException("Unable to add value", e);
 		}
 	}
 
@@ -258,15 +258,15 @@ public class Channel<T> implements ChannelProducer<T> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public long add(T ...t) throws ChannelNullableAssignementException, ChannelIOException {
+	public long add(T ...t) throws StreamNullableAssignementException, StreamIOException {
 		if (t==null) {
-			throw new ChannelNullableAssignementException("Forbidden registration of nullable element list");
+			throw new StreamNullableAssignementException("Forbidden registration of nullable element list");
 		}
 		AtomicLong counter = new AtomicLong(0L);
 		try {
 			Arrays.asList(t).parallelStream().forEach( v -> addToQueue(v, counter) );
 		} catch (Exception e) {
-			throw new ChannelIOException("Unable to add values", e);
+			throw new StreamIOException("Unable to add values", e);
 		}
 		return counter.get();
 	}
@@ -275,15 +275,15 @@ public class Channel<T> implements ChannelProducer<T> {
 	 * @see com.streams.channel.operators.ChannelProducer#add(java.util.Collection)
 	 */
 	@Override
-	public long add(Collection<T> collection) throws ChannelNullableAssignementException, ChannelIOException {
+	public long add(Collection<T> collection) throws StreamNullableAssignementException, StreamIOException {
 		if (collection==null) {
-			throw new ChannelNullableAssignementException("Forbidden registration of nullable collection");
+			throw new StreamNullableAssignementException("Forbidden registration of nullable collection");
 		}
 		AtomicLong counter = new AtomicLong(0L);
 		try {
 			collection.parallelStream().forEach( v -> addToQueue(v, counter) );
 		} catch (Exception e) {
-			throw new ChannelIOException("Unable to add values", e);
+			throw new StreamIOException("Unable to add values", e);
 		}
 		return counter.get();
 	}
@@ -320,15 +320,15 @@ public class Channel<T> implements ChannelProducer<T> {
 	/**
 	 * Poll an element from queue
 	 * @return
-	 * @throws ChannelIOException
+	 * @throws StreamIOException
 	 */
-	public T poll() throws ChannelIOException {
+	public T poll() throws StreamIOException {
 		T t = null;
 		if ( ( ( t = this.channelQueue.poll() ) != null) ) {
 			totalConsumedElements.incrementAndGet();
 			return t;
 		}
-		throw new ChannelIOException("Channel is Empty");
+		throw new StreamIOException("Channel is Empty");
 	}
 
 	/**
@@ -366,9 +366,9 @@ public class Channel<T> implements ChannelProducer<T> {
 
 	/**
 	 * Start Channel Consume Thread
-	 * @throws ChannelIOException Throw if there is no Consumer in Channel output operations
+	 * @throws StreamIOException Throw if there is no Consumer in Channel output operations
 	 */
-	public void start() throws ChannelIOException {
+	public void start() throws StreamIOException {
 		this.totalConsumedElements.set(0L);
 		thread.startConsuming();
 	}
@@ -411,10 +411,10 @@ public class Channel<T> implements ChannelProducer<T> {
 	 * Create a channel and Store it in the {@link ChannelsRegistry}
 	 * @param channelName Registry entry name
 	 * @param type Channel Registration type
-	 * @throws ChannelInstanceException Thrown when Name is inappropriate for Registry
+	 * @throws StreamInstanceException Thrown when Name is inappropriate for Registry
 	 * @throws DuplicatedObjectException Thrown when try to register a Channel with an already used name
 	 */
-	public static final <T> Channel<T> createAndRegister(String channelName, Class<T> type) throws ChannelInstanceException, DuplicatedObjectException {
+	public static final <T> Channel<T> createAndRegister(String channelName, Class<T> type) throws StreamInstanceException, DuplicatedObjectException {
 		return new Channel<>(channelName, type);
 	}
 	
@@ -432,9 +432,9 @@ public class Channel<T> implements ChannelProducer<T> {
 			this.channelInstance = channel;
 		}
 
-		public synchronized void startConsuming() throws ChannelIOException {
+		public synchronized void startConsuming() throws StreamIOException {
 			if (channelInstance.consumers.isEmpty()) {
-				throw new ChannelIOException("No Consumer Defined");
+				throw new StreamIOException("No Consumer Defined");
 			}
 			if (! this.running) {
 				this.running = true;

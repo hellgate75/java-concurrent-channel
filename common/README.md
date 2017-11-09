@@ -1,19 +1,18 @@
-# Java Concurrent Channel
+# Java Concurrent Common Lib
 
 ## What's in the box
 
-Java Concurrent Parametric Channel library providing simple interfaces for :
+Java Concurrent libraries providing :
 
 
-* Listen on new Channel Insert/Reject
-* Listen on new Channel Dequeue
-* Asynchronous thread for managing consumers compliant to provided interface
-* Registry association, for recovering Channels in static context
-* Channel implements a Producer interface, useful for down casting instances
+* Base design pattern components
+* Common utility libraries
+* Definition of atomic and general behviors 
 
-
-All elements can be overloaded with multiple instances. Channel class use Concurrent Non-Blocking Queue for allowing extreme multi-threading.
-
+Defined interfaces:
+* Stream Filter interface : it provide behavior to filter elements, accepting or rejecting them during Stream opt-in operation
+* Stream Consumer interface: used for consuming behalf Stream Consumer Thread
+* Stream Producer interface: used for provisioning data to Stream Components
 
 
 

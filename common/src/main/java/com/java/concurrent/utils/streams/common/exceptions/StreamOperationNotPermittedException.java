@@ -1,15 +1,15 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.channel.exceptions;
+package com.java.concurrent.utils.streams.common.exceptions;
 
 /**
- * Exception thrown during Channel operations, when using features not yet implemented or 
+ * Exception thrown during Stream operations, when using features not yet implemented or 
  * suspended for review
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */
-public class ChannelOperationNotPermittedException extends Exception {
+public class StreamOperationNotPermittedException extends Exception {
 
 	/**
 	 * Exception Serial Version ID
@@ -20,7 +20,7 @@ public class ChannelOperationNotPermittedException extends Exception {
 	 * Constructor
 	 * @param message Exception message
 	 */
-	public ChannelOperationNotPermittedException(String message) {
+	public StreamOperationNotPermittedException(String message) {
 		super(message);
 	}
 
@@ -28,7 +28,7 @@ public class ChannelOperationNotPermittedException extends Exception {
 	 * Constructor
 	 * @param cause Exception throwing clause
 	 */
-	public ChannelOperationNotPermittedException(Throwable cause) {
+	public StreamOperationNotPermittedException(Throwable cause) {
 		super(cause);
 	}
 
@@ -37,7 +37,7 @@ public class ChannelOperationNotPermittedException extends Exception {
 	 * @param message Exception message
 	 * @param cause Exception throwing clause
 	 */
-	public ChannelOperationNotPermittedException(String message, Throwable cause) {
+	public StreamOperationNotPermittedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

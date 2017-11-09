@@ -1,25 +1,25 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.channel.exceptions;
+package com.java.concurrent.utils.streams.common.exceptions;
 
 /**
- * Exception thrown during Channel instance and/or Registry opt-in
+ * Exception thrown during Stream read write operations
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */
-public class ChannelInstanceException extends Exception {
+public class StreamIOException extends Exception {
 
 	/**
 	 * Exception Serial Version ID
 	 */
-	private static final long serialVersionUID = 6744378336188957181L;
+	private static final long serialVersionUID = 6747025107409224604L;
 
 	/**
 	 * Constructor
 	 * @param message Exception message
 	 */
-	public ChannelInstanceException(String message) {
+	public StreamIOException(String message) {
 		super(message);
 	}
 
@@ -27,7 +27,7 @@ public class ChannelInstanceException extends Exception {
 	 * Constructor
 	 * @param cause Exception throwing clause
 	 */
-	public ChannelInstanceException(Throwable cause) {
+	public StreamIOException(Throwable cause) {
 		super(cause);
 	}
 
@@ -36,7 +36,7 @@ public class ChannelInstanceException extends Exception {
 	 * @param message Exception message
 	 * @param cause Exception throwing clause
 	 */
-	public ChannelInstanceException(String message, Throwable cause) {
+	public StreamIOException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

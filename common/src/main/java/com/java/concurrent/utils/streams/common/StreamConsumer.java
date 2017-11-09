@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.channel.operators;
+package com.java.concurrent.utils.streams.common;
 
 /**
  * Consumer behavior descriptor
@@ -9,7 +9,7 @@ package com.java.concurrent.utils.streams.channel.operators;
  * 
  * @param <T> Consume Type
  */
-public interface ChannelConsumer<T> {
+public interface StreamConsumer<T> {
 	/**
 	 * Consumer elements from Channel
 	 * @param t Element to be consumed

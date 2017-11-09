@@ -5,6 +5,7 @@
 Java Concurrent libraries components, reported in following modules :
 
 
+* [Concurrent Common](/common)
 * [Concurrent Channel](/channel)
 
 
@@ -47,6 +48,14 @@ mvn clean package install
 * Cobertura Report (cobertura:cobertura)
 * Javadocs jar (javadoc:jar)
 * Source jar (source:jar)  
+
+
+### Skipping tests available maven command line properties:
+
+* Skip Unit Tests and Cobertura Report (-Dskip.unit.tests=true)
+* Skip Integration Tests (-Dskip.integration.tests=true)
+* Skip All Tests (-Dskip.tests=true)
+
 
   
 ## License

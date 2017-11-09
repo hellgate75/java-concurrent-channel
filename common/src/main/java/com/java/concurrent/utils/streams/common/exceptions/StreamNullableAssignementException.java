@@ -1,14 +1,14 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.channel.exceptions;
+package com.java.concurrent.utils.streams.common.exceptions;
 
 /**
- * Exception thrown during Channel assignament operations, when at least one of operand is nullable or empty
+ * Exception thrown during Stream assignment operations, when at least one of operand is nullable or empty
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */
-public class ChannelNullableAssignementException extends Exception {
+public class StreamNullableAssignementException extends Exception {
 
 	/**
 	 * Exception Serial Version ID
@@ -19,7 +19,7 @@ public class ChannelNullableAssignementException extends Exception {
 	 * Constructor
 	 * @param message Exception message
 	 */
-	public ChannelNullableAssignementException(String message) {
+	public StreamNullableAssignementException(String message) {
 		super(message);
 	}
 
@@ -27,7 +27,7 @@ public class ChannelNullableAssignementException extends Exception {
 	 * Constructor
 	 * @param cause Exception throwing clause
 	 */
-	public ChannelNullableAssignementException(Throwable cause) {
+	public StreamNullableAssignementException(Throwable cause) {
 		super(cause);
 	}
 
@@ -36,7 +36,7 @@ public class ChannelNullableAssignementException extends Exception {
 	 * @param message Exception message
 	 * @param cause Exception throwing clause
 	 */
-	public ChannelNullableAssignementException(String message, Throwable cause) {
+	public StreamNullableAssignementException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

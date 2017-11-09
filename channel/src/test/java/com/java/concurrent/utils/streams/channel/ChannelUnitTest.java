@@ -27,15 +27,15 @@ import org.slf4j.LoggerFactory;
 
 import com.java.concurrent.utils.streams.channel.Channel;
 import com.java.concurrent.utils.streams.channel.ChannelsRegistry;
-import com.java.concurrent.utils.streams.channel.exceptions.ChannelIOException;
-import com.java.concurrent.utils.streams.channel.exceptions.ChannelInstanceException;
-import com.java.concurrent.utils.streams.channel.exceptions.ChannelNullableAssignementException;
-import com.java.concurrent.utils.streams.channel.exceptions.DuplicatedObjectException;
 import com.java.concurrent.utils.streams.channel.listeners.ChannelInputListener;
 import com.java.concurrent.utils.streams.channel.listeners.ChannelOutputListener;
-import com.java.concurrent.utils.streams.channel.operators.ChannelConsumer;
-import com.java.concurrent.utils.streams.channel.operators.ChannelFilter;
-import com.java.concurrent.utils.streams.channel.operators.ChannelProducer;
+import com.java.concurrent.utils.streams.common.StreamConsumer;
+import com.java.concurrent.utils.streams.common.StreamFilter;
+import com.java.concurrent.utils.streams.common.StreamProducer;
+import com.java.concurrent.utils.streams.common.exceptions.StreamIOException;
+import com.java.concurrent.utils.streams.common.exceptions.StreamInstanceException;
+import com.java.concurrent.utils.streams.common.exceptions.StreamNullableAssignementException;
+import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
 
 /**
  * Testing Channel Element
@@ -50,7 +50,7 @@ public class ChannelUnitTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChannelUnitTest.class);
 	
 	@Test
-	public void testStandAloneChannelInstance() throws ChannelInstanceException, DuplicatedObjectException {
+	public void testStandAloneChannelInstance() throws StreamInstanceException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		ChannelsRegistry.get().registerChannel(channel, "MyStandAloneChannel");
@@ -59,35 +59,30 @@ public class ChannelUnitTest {
 		assertTrue("Channel is Empty", channel.isEmpty());
 	}
 	
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testStandAloneChannelAddSingleNullableAssignementException() throws ChannelNullableAssignementException, ChannelIOException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testStandAloneChannelAddSingleNullableAssignementException() throws StreamNullableAssignementException, StreamIOException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String value=null;
 		channel.add(value);
 	}
 	
-	@Test(expected=ChannelIOException.class)
-	public void testStandAloneChannelAddSingleChannelIOException() throws ChannelNullableAssignementException, ChannelIOException, DuplicatedObjectException {
+	@Test(expected=StreamIOException.class)
+	public void testStandAloneChannelAddSingleChannelIOException() throws StreamNullableAssignementException, StreamIOException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		ChannelFilter<String> filter = new ChannelFilter<String>() {
-			
-			@Override
-			public boolean accept(String t) {
-				if (t==null || t.trim().isEmpty())
-					throw new NullPointerException("Value not nullable");
-				return !t.contains("9");
-			}
-		};
-		channel.addChannelFilter(filter);
+		channel.addFilter( t -> {
+			if (t==null || t.trim().isEmpty())
+				throw new NullPointerException("Value not nullable");
+			return !t.contains("9");
+		});
 		String value="";
 		channel.add(value);
 		
 	}
 	
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testStandAloneChannelAddListNullableAssignementException() throws ChannelNullableAssignementException, ChannelIOException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testStandAloneChannelAddListNullableAssignementException() throws StreamNullableAssignementException, StreamIOException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		List<String> valueList = null;
@@ -95,11 +90,11 @@ public class ChannelUnitTest {
 		
 	}
 	
-	@Test(expected=ChannelIOException.class)
-	public void testStandAloneChannelAddListChannelIOException() throws ChannelNullableAssignementException, ChannelIOException, DuplicatedObjectException {
+	@Test(expected=StreamIOException.class)
+	public void testStandAloneChannelAddListChannelIOException() throws StreamNullableAssignementException, StreamIOException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		ChannelFilter<String> filter = new ChannelFilter<String>() {
+		StreamFilter<String> filter = new StreamFilter<String>() {
 			
 			@Override
 			public boolean accept(String t) {
@@ -108,15 +103,15 @@ public class ChannelUnitTest {
 				return !t.contains("9");
 			}
 		};
-		channel.addChannelFilter(filter);
+		channel.addFilter(filter);
 		String value=null;
 		List<String> valueList = new ArrayList<String>(0);
 		valueList.add(value);
 		channel.add(valueList);
 	}
 	
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testStandAloneChannelAddArrayNullableAssignementException() throws ChannelNullableAssignementException, ChannelIOException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testStandAloneChannelAddArrayNullableAssignementException() throws StreamNullableAssignementException, StreamIOException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String[] value=null;
@@ -124,26 +119,21 @@ public class ChannelUnitTest {
 		
 	}
 	
-	@Test(expected=ChannelIOException.class)
-	public void testStandAloneChannelAddArrayChannelIOException() throws ChannelNullableAssignementException, ChannelIOException, DuplicatedObjectException {
+	@Test(expected=StreamIOException.class)
+	public void testStandAloneChannelAddArrayChannelIOException() throws StreamNullableAssignementException, StreamIOException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		ChannelFilter<String> filter = new ChannelFilter<String>() {
-			
-			@Override
-			public boolean accept(String t) {
-				if (t==null || t.trim().isEmpty())
-					throw new NullPointerException("Value not nullable");
-				return !t.contains("9");
-			}
-		};
-		channel.addChannelFilter(filter);
+		channel.addFilter( t -> {
+			if (t==null || t.trim().isEmpty())
+				throw new NullPointerException("Value not nullable");
+			return !t.contains("9");
+		});
 		String value=null;
 		channel.add(new String[] {value});
 	}
 	
 	@Test()
-	public void testStandAloneChannelPoll() throws ChannelIOException, DuplicatedObjectException, ChannelNullableAssignementException {
+	public void testStandAloneChannelPoll() throws StreamIOException, DuplicatedObjectException, StreamNullableAssignementException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String value="A";
@@ -152,8 +142,8 @@ public class ChannelUnitTest {
 		assertTrue("Channel is Empty", channel.isEmpty());
 	}
 	
-	@Test(expected=ChannelIOException.class)
-	public void testStandAloneChannelPollChannelIOException() throws ChannelIOException, DuplicatedObjectException, ChannelNullableAssignementException {
+	@Test(expected=StreamIOException.class)
+	public void testStandAloneChannelPollChannelIOException() throws StreamIOException, DuplicatedObjectException, StreamNullableAssignementException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		assertTrue("Channel is Empty", channel.isEmpty());
@@ -161,7 +151,7 @@ public class ChannelUnitTest {
 	}
 	
 	@Test()
-	public void testStandAloneChannelRetainAll() throws ChannelIOException, DuplicatedObjectException, ChannelNullableAssignementException {
+	public void testStandAloneChannelRetainAll() throws StreamIOException, DuplicatedObjectException, StreamNullableAssignementException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		String value="A";
@@ -173,7 +163,7 @@ public class ChannelUnitTest {
 	}
 	
 	@Test
-	public void testRegisteredChannelInstance() throws ChannelInstanceException, DuplicatedObjectException {
+	public void testRegisteredChannelInstance() throws StreamInstanceException, DuplicatedObjectException {
 		Channel<String> channel = Channel.createAndRegister("MyChannel", String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		assertEquals("Class Name Must match", "MyChannel", channel.getChannelName());
@@ -207,40 +197,40 @@ public class ChannelUnitTest {
 		assertTrue("Channel is Empty", channel.isEmpty());
 	}
 
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelProducerChannelNullableAssignementException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelProducerChannelNullableAssignementException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		channel.addChannelConsumer(null);
+		channel.addConsumer(null);
 		
 	}
 
 	@Test(expected=DuplicatedObjectException.class)
-	public void testChannelProducerChannelDuplicatedObjectException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void testChannelProducerChannelDuplicatedObjectException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		ChannelConsumer<String> consumer = new ChannelConsumer<String>() {
+		StreamConsumer<String> consumer = new StreamConsumer<String>() {
 			
 			@Override
 			public void consume(String t) {
 				LOGGER.warn("Consumed: " + t);
 			}
 		};
-		channel.addChannelConsumer(consumer);
-		channel.addChannelConsumer(consumer);
+		channel.addConsumer(consumer);
+		channel.addConsumer(consumer);
 		
 	}
 
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelProducerRemoveChannelNullableAssignementException() throws ChannelNullableAssignementException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelProducerRemoveChannelNullableAssignementException() throws StreamNullableAssignementException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		channel.removeChannelConsumer(null);
+		channel.removeConsumer(null);
 		
 	}
 
 	@Test(timeout=15000)
-	public void testChannelProducerAndConsume() throws ChannelNullableAssignementException, DuplicatedObjectException, ChannelIOException {
+	public void testChannelProducerAndConsume() throws StreamNullableAssignementException, DuplicatedObjectException, StreamIOException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		runThreadsOnProducer(channel, 100, 1000);
@@ -256,14 +246,14 @@ public class ChannelUnitTest {
 		assertEquals("Total consumed elements must be zero", 
 				0, channel.getTotalConsumedElements());
 		assertFalse("Channel is not Empty", channel.isEmpty());
-		ChannelConsumer<String> consumer = new ChannelConsumer<String>() {
+		StreamConsumer<String> consumer = new StreamConsumer<String>() {
 			
 			@Override
 			public void consume(String t) {
 				LOGGER.warn("Consumed: " + t);
 			}
 		};
-		channel.addChannelConsumer(consumer);
+		channel.addConsumer(consumer);
 		channel.start();
 		assertTrue("Consumer Thread Must be running", channel.running());
 		try {
@@ -283,20 +273,20 @@ public class ChannelUnitTest {
 		}
 		assertEquals("Total consumed elements must same than produced ones", 
 				channel.getTotalElements(), channel.getTotalConsumedElements());
-		channel.removeChannelConsumer(consumer);
+		channel.removeConsumer(consumer);
 		assertTrue("Channel is Empty", channel.isEmpty());
 	}
 
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelInputListenerChannelNullableAssignementException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelInputListenerChannelNullableAssignementException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		channel.addChannelInputListener(null);
 		
 	}
 
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelInputListenerRemoveChannelNullableAssignementException() throws ChannelNullableAssignementException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelInputListenerRemoveChannelNullableAssignementException() throws StreamNullableAssignementException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		channel.removeChannelInputListener(null);
@@ -304,7 +294,7 @@ public class ChannelUnitTest {
 	}
 
 	@Test(expected=DuplicatedObjectException.class)
-	public void testChannelInputListenerChannelDuplicatedObjectException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void testChannelInputListenerChannelDuplicatedObjectException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		AtomicLong readCount = new AtomicLong(0L);
@@ -326,7 +316,7 @@ public class ChannelUnitTest {
 	}
 
 	@Test(timeout=8000)
-	public void testChannelInputListener() throws ChannelNullableAssignementException, DuplicatedObjectException, ChannelIOException {
+	public void testChannelInputListener() throws StreamNullableAssignementException, DuplicatedObjectException, StreamIOException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		AtomicLong readCount = new AtomicLong(0L);
@@ -361,16 +351,16 @@ public class ChannelUnitTest {
 		assertFalse("Channel is not Empty", channel.isEmpty());
 	}
 
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelOutputListenerChannelNullableAssignementException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelOutputListenerChannelNullableAssignementException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		channel.addChannelOutputListener(null);
 		
 	}
 
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelOutputListenerRemoveChannelNullableAssignementException() throws ChannelNullableAssignementException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelOutputListenerRemoveChannelNullableAssignementException() throws StreamNullableAssignementException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		channel.removeChannelOutputListener(null);
@@ -378,7 +368,7 @@ public class ChannelUnitTest {
 	}
 
 	@Test(expected=DuplicatedObjectException.class)
-	public void testChannelOutputListenerChannelDuplicatedObjectException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void testChannelOutputListenerChannelDuplicatedObjectException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		AtomicLong writeCount = new AtomicLong(0L);
@@ -401,7 +391,7 @@ public class ChannelUnitTest {
 	}
 
 	@Test(timeout=15000)
-	public void testChannelOutputListener() throws ChannelNullableAssignementException, DuplicatedObjectException, ChannelIOException {
+	public void testChannelOutputListener() throws StreamNullableAssignementException, DuplicatedObjectException, StreamIOException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		AtomicLong writeCount = new AtomicLong(0L);
@@ -432,7 +422,7 @@ public class ChannelUnitTest {
 				100000, channel.getTotalElements());
 		assertEquals("Total consumed elements must be zero", 
 				0, channel.getTotalConsumedElements());
-		channel.addChannelConsumer(new ChannelConsumer<String>() {
+		channel.addConsumer(new StreamConsumer<String>() {
 			
 			@Override
 			public void consume(String t) {
@@ -464,51 +454,51 @@ public class ChannelUnitTest {
 		channel.removeChannelOutputListener(listener);
 	}
 	
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelFilterChannelNullableAssignementException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelFilterChannelNullableAssignementException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		channel.addChannelFilter(null);
+		channel.addFilter(null);
 		
 	}
 
-	@Test(expected=ChannelNullableAssignementException.class)
-	public void testChannelFilterRemoveChannelNullableAssignementException() throws ChannelNullableAssignementException {
+	@Test(expected=StreamNullableAssignementException.class)
+	public void testChannelFilterRemoveChannelNullableAssignementException() throws StreamNullableAssignementException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		channel.removeChannelFilter(null);
+		channel.removeFilter(null);
 		
 	}
 
 	@Test(expected=DuplicatedObjectException.class)
-	public void testChannelFilterChannelDuplicatedObjectException() throws ChannelNullableAssignementException, DuplicatedObjectException {
+	public void testChannelFilterChannelDuplicatedObjectException() throws StreamNullableAssignementException, DuplicatedObjectException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
-		ChannelFilter<String> filter = new ChannelFilter<String>() {
+		StreamFilter<String> filter = new StreamFilter<String>() {
 			
 			@Override
 			public boolean accept(String t) {
 				return !t.contains("9");
 			}
 		};
-		channel.addChannelFilter(filter);
-		channel.addChannelFilter(filter);
+		channel.addFilter(filter);
+		channel.addFilter(filter);
 	}
 
 	@Test(timeout=8000)
-	public void testChannelFilter() throws ChannelNullableAssignementException, DuplicatedObjectException, ChannelIOException {
+	public void testChannelFilter() throws StreamNullableAssignementException, DuplicatedObjectException, StreamIOException {
 		Channel<String> channel = new Channel<>(String.class);
 		assertEquals("Class Type Must match", String.class, channel.getType());
 		AtomicLong readCount = new AtomicLong(0L);
 		AtomicLong rejectCount = new AtomicLong(0L);
-		ChannelFilter<String> filter = new ChannelFilter<String>() {
+		StreamFilter<String> filter = new StreamFilter<String>() {
 			
 			@Override
 			public boolean accept(String t) {
 				return !t.contains("9");
 			}
 		};
-		channel.addChannelFilter(filter);
+		channel.addFilter(filter);
 		ChannelInputListener<String> listener = new ChannelInputListener<String>() {
 			
 			@Override
@@ -539,7 +529,7 @@ public class ChannelUnitTest {
 		assertEquals("Total rejected must be 10000 elements on multi-threding", 
 				19000, rejectCount.get());
 		channel.removeChannelInputListener(listener);
-		channel.removeChannelFilter(filter);
+		channel.removeFilter(filter);
 	}
 	private static final String intToLineString(Integer i) {
 		return "Line " + i;
@@ -551,7 +541,7 @@ public class ChannelUnitTest {
 		.collect(Collectors.toList());
 	}
 	
-	private <T> void runThreadsOnProducer(ChannelProducer<String> producer, int numberOfLines, int numberOfProcesses) {
+	private <T> void runThreadsOnProducer(StreamProducer<String> producer, int numberOfLines, int numberOfProcesses) {
 		ExecutorService executor = Executors.newCachedThreadPool();
 		  for (int i = 0; i < numberOfProcesses; i++) executor.execute(() -> {
 			  try {
@@ -562,7 +552,7 @@ public class ChannelUnitTest {
 		  });
 	}
 
-	private <T> void runThreadsOnProducerForArray(ChannelProducer<String> producer, int numberOfLines, int numberOfProcesses) {
+	private <T> void runThreadsOnProducerForArray(StreamProducer<String> producer, int numberOfLines, int numberOfProcesses) {
 		ExecutorService executor = Executors.newCachedThreadPool();
 		  for (int i = 0; i < numberOfProcesses; i++) executor.execute(() -> {
 			  try {

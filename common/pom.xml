@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.concurrent.utils.streams</groupId>
-	<artifactId>channel</artifactId>
+	<artifactId>common</artifactId>
 	<version>1.0.0</version>
-	<name>Concurrent Channel Library</name>
+	<name>Concurrent Common Library</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -12,8 +12,8 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<skip.unit.tests>false</skip.unit.tests>
-		<skip.integration.tests>false</skip.integration.tests>
+		<skip.unit.tests>true</skip.unit.tests>
+		<skip.integration.tests>true</skip.integration.tests>
 
 		<sfl4j.version>1.7.25</sfl4j.version>
 		<log4j-sfl4j.version>2.9.1</log4j-sfl4j.version>
@@ -21,12 +21,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- Common -->
-		<dependency>
-			<groupId>com.concurrent.utils.streams</groupId>
-			<artifactId>common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -77,7 +71,8 @@
 							<propertyName>surefireArgLine</propertyName>
 							<!-- Exclude of out scope artifacts in Preparation -->
 							<excludes>
-								<exclude>**/listeners/*.java</exclude>
+								<exclude>**/exceptions/*.java</exclude>
+								<exclude>**/operators/*.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -97,7 +92,8 @@
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 							<!-- Exclude of out scope artifacts in Report -->
 							<excludes>
-								<exclude>**/listeners/*.java</exclude>
+								<exclude>**/exceptions/*.java</exclude>
+								<exclude>**/operators/*.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -112,14 +108,15 @@
 					<instrumentation>
 							<!-- Exclude of out scope artifacts in Cobertura Report -->
 						<excludes>
-							<exclude>**/listeners/*.class</exclude>
+							<exclude>**/exceptions/*.class</exclude>
+							<exclude>**/operators/*.class</exclude>
 						</excludes>
 							<!-- Ignores of out scope components, sub-components and methods -->
-						<ignores>
+						<!-- <ignores>
 							<ignore>com.java.concurrent.utils.streams.channel.Channel.finalize</ignore>
 							<ignore>com.java.concurrent.utils.streams.channel.Channel.ChannelThread</ignore>
 							<ignore>com.java.concurrent.utils.streams.channel.Channel.ChannelThread.*</ignore>
-						</ignores>
+						</ignores> -->
 					</instrumentation>
 				</configuration>
 				<executions>
