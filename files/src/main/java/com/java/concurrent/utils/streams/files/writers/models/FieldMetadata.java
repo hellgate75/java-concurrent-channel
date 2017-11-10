@@ -8,7 +8,7 @@ package com.java.concurrent.utils.streams.files.writers.models;
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */
-public class FieldAssociation {
+public class FieldMetadata implements Comparable<FieldMetadata> {
 
 	private String itemFieldName=null;
 	
@@ -23,7 +23,7 @@ public class FieldAssociation {
 	 * @param itemFieldName Name of Item field
 	 * @param fileHeaderName name of field file header
 	 */
-	public FieldAssociation(String itemFieldName, String fileHeaderName) {
+	public FieldMetadata(String itemFieldName, String fileHeaderName) {
 		super();
 		if (itemFieldName==null)
 			throw new NullPointerException("Item field name cannot be null");
@@ -38,7 +38,7 @@ public class FieldAssociation {
 	 * @param itemFieldName Name of Item field
 	 * @param fileFieldPosition Position in line tokens
 	 */
-	public FieldAssociation(String itemFieldName, int fileFieldPosition) {
+	public FieldMetadata(String itemFieldName, int fileFieldPosition) {
 		super();
 		if (itemFieldName==null)
 			throw new NullPointerException("Item field name cannot be null");
@@ -52,7 +52,7 @@ public class FieldAssociation {
 	 * @param fileFieldPosition Position in line chunks
 	 * @param fileFieldLength Length of field text content
 	 */
-	public FieldAssociation(String itemFieldName, int fileFieldPosition, int fileFieldLength) {
+	public FieldMetadata(String itemFieldName, int fileFieldPosition, int fileFieldLength) {
 		super();
 		if (itemFieldName==null)
 			throw new NullPointerException("Item field name cannot be null");
@@ -91,6 +91,17 @@ public class FieldAssociation {
 	 */
 	public int getFileFieldLength() {
 		return fileFieldLength;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(FieldMetadata o) {
+		if (o==null) {
+			return 1;
+		}
+		return this.fileFieldPosition - o.fileFieldPosition;
 	}
 
 	

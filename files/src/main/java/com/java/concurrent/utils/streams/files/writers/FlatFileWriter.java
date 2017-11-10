@@ -3,12 +3,9 @@
  */
 package com.java.concurrent.utils.streams.files.writers;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,72 +23,96 @@ import com.java.concurrent.utils.streams.common.exceptions.StreamNullableAssigne
  *
  */
 public class FlatFileWriter implements StreamWriter<String> {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlatFileWriter.class);
-	
+
 	private FileWriter writer;
-	
+
 	private File file;
-	
+
 	private final ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-	
+
 	private boolean saving = false;
 
 	/**
 	 * Constructor
-	 * @throws FileNotFoundException 
+	 * 
+	 * @throws FileNotFoundException
 	 */
-	public FlatFileWriter(Path filePath) throws IOException {
+	public FlatFileWriter(Path filePath) throws StreamIOException {
 		super();
-		file = filePath.toFile();
-		writer = new FileWriter(file);
+		try {
+			file = filePath.toFile();
+			writer = new FileWriter(file);
+			this.open();
+		} catch (Exception e) {
+			throw new StreamIOException(e);
+		}
 	}
 
 	/**
 	 * Constructor
-	 * @throws FileNotFoundException 
+	 * 
+	 * @throws FileNotFoundException
 	 */
-	public FlatFileWriter(File file) throws IOException {
+	public FlatFileWriter(File file) throws StreamIOException {
 		super();
-		this.file = file;
-		writer = new FileWriter(file);
+		try {
+			this.file = file;
+			writer = new FileWriter(file);
+			this.open();
+		} catch (Exception e) {
+			throw new StreamIOException(e);
+		}
 	}
 
 	/**
 	 * Constructor
-	 * @throws FileNotFoundException 
+	 * 
+	 * @throws FileNotFoundException
 	 */
-	public FlatFileWriter(String filePath) throws IOException {
+	public FlatFileWriter(String filePath) throws StreamIOException {
 		super();
-		file = new File(filePath);
-		writer = new FileWriter(file);
+		try {
+			file = new File(filePath);
+			writer = new FileWriter(file);
+			this.open();
+		} catch (Exception e) {
+			throw new StreamIOException(e);
+		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.lang.Object)
+	 */
 	@Override
 	public boolean write(String t) throws StreamNullableAssignementException, StreamIOException {
-		if (t==null) {
+		if (t == null) {
 			throw new StreamNullableAssignementException("Line cannot be null");
 		}
 		try {
 			queue.add(t);
-			if (! saving ) {
+			if (!saving) {
 				saveToFile();
 			}
 			return true;
 		} catch (Exception e) {
-			LOGGER.error("Errors adding line <"+t+">", e);
-			throw new StreamIOException("Errors adding line <"+t+">", e);
+			LOGGER.error("Errors adding line <" + t + ">", e);
+			throw new StreamIOException("Errors adding line <" + t + ">", e);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.lang.Object[])
+	 */
 	@Override
 	public long write(String... t) throws StreamNullableAssignementException, StreamIOException {
-		if (t==null) {
+		if (t == null) {
 			throw new StreamNullableAssignementException("Array cannot be null");
 		}
 		try {
 			Arrays.asList(t).parallelStream().forEach(queue::add);
-			if (! saving ) {
+			if (!saving) {
 				saveToFile();
 			}
 			return t.length;
@@ -101,14 +122,17 @@ public class FlatFileWriter implements StreamWriter<String> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.util.Collection)
+	 */
 	@Override
 	public long write(Collection<String> t) throws StreamNullableAssignementException, StreamIOException {
-		if (t==null) {
+		if (t == null) {
 			throw new StreamNullableAssignementException("Collection cannot be null");
 		}
 		try {
 			t.parallelStream().forEach(queue::add);
-			if (! saving ) {
+			if (!saving) {
 				saveToFile();
 			}
 			return t.size();
@@ -117,20 +141,20 @@ public class FlatFileWriter implements StreamWriter<String> {
 			throw new StreamIOException("Errors adding lines", e);
 		}
 	}
-	
+
 	private synchronized void saveToFile() {
 		String line = null;
-		while (saving = ! queue.isEmpty()) {
+		while (saving = !queue.isEmpty()) {
 			try {
 				line = queue.poll();
-				if (line==null)
-					line="";
+				if (line == null)
+					line = "";
 				writer.write(line);
 				writer.flush();
-				line=null;
+				line = null;
 			} catch (Exception e) {
 				LOGGER.error("Errors saving line to file", e);
-				if (line!=null) {
+				if (line != null) {
 					queue.add(line);
 				}
 				saving = false;
@@ -139,9 +163,8 @@ public class FlatFileWriter implements StreamWriter<String> {
 		}
 	}
 
-	@Override
-	public void open() throws StreamIOException {
-		if (writer==null) {
+	private void open() throws StreamIOException {
+		if (writer == null) {
 			try {
 				writer = new FileWriter(file);
 			} catch (Exception e) {
@@ -153,6 +176,9 @@ public class FlatFileWriter implements StreamWriter<String> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#close()
+	 */
 	@Override
 	public void close() throws StreamIOException {
 		synchronized (this) {
@@ -167,9 +193,12 @@ public class FlatFileWriter implements StreamWriter<String> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamWriter#isOpen()
+	 */
 	@Override
 	public boolean isOpen() {
-		return writer!=null;
+		return writer != null;
 	}
 
 }

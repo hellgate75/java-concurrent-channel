@@ -21,26 +21,40 @@ import com.java.concurrent.utils.streams.files.writers.utilities.ReflectionUtili
  * @param <O> Item Entity Type
  * @see LineMapper
  */
-public class DelimitedLineMapper<I extends String, O> implements LineMapper<I, O> {
+public class FixedLengthLineMapper<I extends String, O> implements LineMapper<I, O> {
 
 	private List<FieldExecutor<O>> executors;
 	private FieldAssociation association;
 	
 	private HeaderAssociator headers;
 	
+	private String delimiter=",";
+	
 	private Supplier<O> generator;
 	
 	private Class<O> clazz;
 	
 	private long maxNumberOfReadErrors=-1L;
+	
+	/**
+	 * Constructor
+	 * @param generator Generate new Output Item Instance
+	 * @param association Association for Item Fields
+	 * @param delimter Field Line Delimiter
+	 * @throws StreamIOException Thrown when Mapper initializer fails
+	 */
+	public FixedLengthLineMapper(Supplier<O> generator, FieldAssociation fieldsFolder, String delimiter) throws StreamIOException {
+		this(generator, fieldsFolder);
+		this.delimiter = delimiter;
+	}
 
 	/**
-	 * Default Constructor
+	 * Constructor that use as separator comma character
 	 * @param generator Generate new Output Item Instance
 	 * @param association Association for Item Fields
 	 * @throws StreamIOException Thrown when Mapper initializer fails
 	 */
-	public DelimitedLineMapper(Supplier<O> generator, FieldAssociation fieldsFolder) throws StreamIOException {
+	public FixedLengthLineMapper(Supplier<O> generator, FieldAssociation fieldsFolder) throws StreamIOException {
 		super();
 		this.association = fieldsFolder;
 		this.generator=generator;
@@ -66,7 +80,7 @@ public class DelimitedLineMapper<I extends String, O> implements LineMapper<I, O
 	public void setMaxNumberOfReadErrors(long maxNumberOfReadErrors) {
 		this.maxNumberOfReadErrors = maxNumberOfReadErrors;
 	}
-	
+
 	/**
 	 * @return the headers
 	 */
@@ -95,6 +109,12 @@ public class DelimitedLineMapper<I extends String, O> implements LineMapper<I, O
 		return association;
 	}
 
+	/**
+	 * @return the delimter
+	 */
+	public String getDelimiter() {
+		return delimiter;
+	}
 
 	/* (non-Javadoc)
 	 * @see com.java.concurrent.utils.streams.common.behaviors.Mapper#map(java.lang.Object)
@@ -102,7 +122,7 @@ public class DelimitedLineMapper<I extends String, O> implements LineMapper<I, O
 	@Override
 	public O map(I i) throws StreamIOException {
 		try {
-			return FileUtilities.mapObject(i, association, generator, executors);
+			return FileUtilities.mapObject(i, delimiter, generator, executors);
 		} catch (Exception e) {
 			throw new StreamIOException(e);
 		}

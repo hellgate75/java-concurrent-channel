@@ -13,5 +13,8 @@ import com.java.concurrent.utils.streams.common.behaviors.Mapper;
  * @param <O> Output Item Type
  * @see Mapper
  */
-public interface ItemMapper<I extends String, O> extends Mapper<I, O> {
+public interface LineMapper<I extends String, O> extends Mapper<I, O> {
+	default long getMaxNumberOfReadErrors() {
+		return -1L;
+	}
 }

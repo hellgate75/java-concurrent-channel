@@ -45,11 +45,6 @@ public interface StreamWriter<T> extends AutoCloseable {
 	long write(Collection<T> t) throws StreamNullableAssignementException, StreamIOException;
 
 	/**
-	 * Open Stream
-	 */
-	void open() throws StreamIOException;
-
-	/**
 	 * Close Stream
 	 * @throws StreamIOException Thrown when trying to close Stream
 	 */

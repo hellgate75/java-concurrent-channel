@@ -18,6 +18,7 @@ import com.java.concurrent.utils.streams.channel.Channel;
 import com.java.concurrent.utils.streams.channel.ChannelsRegistry;
 import com.java.concurrent.utils.streams.common.exceptions.StreamInstanceException;
 import com.java.concurrent.utils.streams.common.exceptions.DuplicatedObjectException;
+import com.java.concurrent.utils.streams.common.exceptions.StreamIOException;
 
 /**
  * Testing Channel Registry Helper
@@ -31,7 +32,7 @@ public class RegisterChannelUnitTest {
 
 	
 	@Test()
-	public void testRegistryCannelRegister() throws StreamInstanceException, DuplicatedObjectException {
+	public void testRegistryCannelRegister() throws StreamInstanceException, DuplicatedObjectException, StreamIOException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, "fakeName");
@@ -46,7 +47,7 @@ public class RegisterChannelUnitTest {
 	}
 
 	@Test(expected=StreamInstanceException.class)
-	public void testRegistryCannelRegisterChannelInstanceExceptionCauseByName() throws StreamInstanceException, DuplicatedObjectException {
+	public void testRegistryCannelRegisterChannelInstanceExceptionCauseByName() throws StreamInstanceException, DuplicatedObjectException, StreamIOException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, null);
@@ -54,7 +55,7 @@ public class RegisterChannelUnitTest {
 	}
 
 	@Test(expected=DuplicatedObjectException.class)
-	public void testRegistryCannelRegisterDuplicatedObjectException() throws StreamInstanceException, DuplicatedObjectException {
+	public void testRegistryCannelRegisterDuplicatedObjectException() throws StreamInstanceException, DuplicatedObjectException, StreamIOException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, "fakeName");
@@ -63,7 +64,7 @@ public class RegisterChannelUnitTest {
 	}
 
 	@Test()
-	public void testRegistryChannelUnRegisterExistingChannel() throws StreamInstanceException, DuplicatedObjectException {
+	public void testRegistryChannelUnRegisterExistingChannel() throws StreamInstanceException, DuplicatedObjectException, StreamIOException {
 		ChannelsRegistry.get().unregisterChannel("fakeName");
 		Channel<String> channel = new Channel<>(String.class);
 		ChannelsRegistry.get().registerChannel(channel, "fakeName");

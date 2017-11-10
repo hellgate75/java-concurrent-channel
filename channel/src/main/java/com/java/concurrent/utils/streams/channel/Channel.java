@@ -69,11 +69,13 @@ public class Channel<T> implements StreamReader<T>, StreamWriter<T> {
 	/**
 	 * Constructor for stand-alone Channels
 	 * @param type Channel Objects type
+	 * @throws StreamIOException Thrown when errors occurs during stream opening
 	 */
-	public Channel(Class<T> type) {
+	public Channel(Class<T> type) throws StreamIOException {
 		super();
 		this.type=type;
 		this.channelName = null;
+		this.open();
 	}
 
 	
@@ -83,8 +85,9 @@ public class Channel<T> implements StreamReader<T>, StreamWriter<T> {
 	 * @param type Channel Objects type
 	 * @throws StreamInstanceException Thrown when Name is inappropriate for Registry
 	 * @throws DuplicatedObjectException Thrown when try to register a Channel with an already used name
+	 * @throws StreamIOException Thrown when errors occurs during stream opening
 	 */
-	private Channel(String name, Class<T> type) throws StreamInstanceException, DuplicatedObjectException {
+	private Channel(String name, Class<T> type) throws StreamInstanceException, DuplicatedObjectException, StreamIOException {
 		this(type);
 		channelName = name;
 		ChannelsRegistry.get().registerChannel(this, name);
@@ -378,17 +381,22 @@ public class Channel<T> implements StreamReader<T>, StreamWriter<T> {
 	}
 
 
-	@Override
-	public void open() throws StreamIOException {
+	private void open() throws StreamIOException {
 		this.totalConsumedElements.set(0L);
 		thread.startConsuming();
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#isOpen()
+	 */
 	@Override
 	public boolean isOpen() {
 		return thread.isRunning();
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#close()
+	 */
 	@Override
 	public void close() throws StreamIOException {
 		thread.stopConsuming();
@@ -419,12 +427,16 @@ public class Channel<T> implements StreamReader<T>, StreamWriter<T> {
 	 * @param type Channel Registration type
 	 * @throws StreamInstanceException Thrown when Name is inappropriate for Registry
 	 * @throws DuplicatedObjectException Thrown when try to register a Channel with an already used name
+	 * @throws StreamIOException Thrown when errors occurs during stream opening
 	 */
-	public static final <T> Channel<T> createAndRegister(String channelName, Class<T> type) throws StreamInstanceException, DuplicatedObjectException {
+	public static final <T> Channel<T> createAndRegister(String channelName, Class<T> type) throws StreamInstanceException, DuplicatedObjectException, StreamIOException {
 		return new Channel<>(channelName, type);
 	}
 	
 	private static class ChannelThread<T> extends Thread {
+		
+		private static final long THREAD_WAIT_TIMEOUT=500L;
+		
 		private Channel<T> channelInstance;
 		
 		private boolean running = false;
@@ -438,10 +450,7 @@ public class Channel<T> implements StreamReader<T>, StreamWriter<T> {
 			this.channelInstance = channel;
 		}
 
-		public synchronized void startConsuming() throws StreamIOException {
-			if (channelInstance.consumers.isEmpty()) {
-				throw new StreamIOException("No Consumer Defined");
-			}
+		public synchronized void startConsuming() {
 			if (! this.running) {
 				this.running = true;
 				super.start();
@@ -469,10 +478,18 @@ public class Channel<T> implements StreamReader<T>, StreamWriter<T> {
 			while (running || !channelInstance.channelQueue.isEmpty()) {
 				if (channelInstance.channelQueue.isEmpty()) {
 					try {
-						Thread.sleep(500);
+						Thread.sleep(THREAD_WAIT_TIMEOUT);
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
+				}
+				if (channelInstance.consumers.isEmpty()) {
+					try {
+						Thread.sleep(THREAD_WAIT_TIMEOUT);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+					continue;
 				}
 				channelInstance.channelQueue.parallelStream()
 				.forEach( n -> {

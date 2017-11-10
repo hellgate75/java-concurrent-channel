@@ -35,20 +35,30 @@ public class FlatFileReader implements StreamReader<String> {
 	 * Constructor
 	 * @throws FileNotFoundException 
 	 */
-	public FlatFileReader(Path filePath) throws FileNotFoundException {
+	public FlatFileReader(Path filePath) throws StreamIOException {
 		super();
-		file = filePath.toFile();
-		reader = new BufferedReader(new FileReader(file));
+		try {
+			file = filePath.toFile();
+			reader = new BufferedReader(new FileReader(file));
+			this.open();
+		} catch (Exception e) {
+			throw new StreamIOException(e);
+		}
 	}
 
 	/**
 	 * Constructor
 	 * @throws FileNotFoundException 
 	 */
-	public FlatFileReader(File file) throws FileNotFoundException {
+	public FlatFileReader(File file) throws StreamIOException {
 		super();
-		this.file = file;
-		reader = new BufferedReader(new FileReader(file));
+		try {
+			this.file = file;
+			reader = new BufferedReader(new FileReader(file));
+			this.open();
+		} catch (Exception e) {
+			throw new StreamIOException(e);
+		}
 	}
 
 	/**
@@ -61,6 +71,9 @@ public class FlatFileReader implements StreamReader<String> {
 		reader = new BufferedReader(new FileReader(file));
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#read()
+	 */
 	@Override
 	public String read() throws StreamIOException {
 		synchronized (this) {
@@ -76,6 +89,9 @@ public class FlatFileReader implements StreamReader<String> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#readAll()
+	 */
 	@Override
 	public List<String> readAll() throws StreamIOException {
 		synchronized (this) {
@@ -90,6 +106,9 @@ public class FlatFileReader implements StreamReader<String> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#isEmpty()
+	 */
 	@Override
 	public boolean isEmpty() {
 		try {
@@ -100,8 +119,7 @@ public class FlatFileReader implements StreamReader<String> {
 		}
 	}
 
-	@Override
-	public void open() throws StreamIOException {
+	private void open() throws StreamIOException {
 			if (reader==null) {
 				try {
 					reader = new BufferedReader(new FileReader(file));
@@ -114,6 +132,9 @@ public class FlatFileReader implements StreamReader<String> {
 			}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#close()
+	 */
 	@Override
 	public void close() throws StreamIOException {
 		synchronized (this) {
@@ -128,6 +149,9 @@ public class FlatFileReader implements StreamReader<String> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.java.concurrent.utils.streams.common.StreamReader#isOpen()
+	 */
 	@Override
 	public boolean isOpen() {
 		return reader!=null;

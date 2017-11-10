@@ -36,11 +36,6 @@ public interface StreamReader<T> extends AutoCloseable {
 	boolean isEmpty();
 
 	/**
-	 * Open Stream
-	 */
-	void open() throws StreamIOException;
-
-	/**
 	 * Close Stream
 	 * @throws StreamIOException Thrown when trying to close Stream
 	 */
