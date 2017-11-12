@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.java.concurrent.utils.streams.files.writers;
+package com.java.concurrent.utils.streams.files.readers;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,6 +40,7 @@ public class ItemReader<T> implements StreamReader<T> {
 	
 	/**
 	 * Constructor
+	 * @param mapper
 	 * @param file
 	 * @throws StreamIOException
 	 */
@@ -57,6 +58,7 @@ public class ItemReader<T> implements StreamReader<T> {
 
 	/**
 	 * Constructor
+	 * @param mapper
 	 * @param filePath
 	 * @throws StreamIOException
 	 */
@@ -74,6 +76,7 @@ public class ItemReader<T> implements StreamReader<T> {
 
 	/**
 	 * Constructor
+	 * @param mapper
 	 * @param filePath
 	 * @throws FileNotFoundException
 	 */

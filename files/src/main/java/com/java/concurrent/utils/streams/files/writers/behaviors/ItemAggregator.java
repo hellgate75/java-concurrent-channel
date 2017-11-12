@@ -14,6 +14,6 @@ import com.java.concurrent.utils.streams.common.behaviors.Mapper;
  * 
  * @see Mapper
  */
-public interface ItemAggregator<I, O extends String> extends Mapper<I, O> {
+public interface ItemAggregator<I> extends Mapper<I, String> {
 
 }

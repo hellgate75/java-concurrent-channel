@@ -33,7 +33,8 @@ public class FlatFileReader implements StreamReader<String> {
 
 	/**
 	 * Constructor
-	 * @throws FileNotFoundException 
+	 * @param filePath
+	 * @throws StreamIOException
 	 */
 	public FlatFileReader(Path filePath) throws StreamIOException {
 		super();
@@ -48,7 +49,8 @@ public class FlatFileReader implements StreamReader<String> {
 
 	/**
 	 * Constructor
-	 * @throws FileNotFoundException 
+	 * @param file
+	 * @throws StreamIOException
 	 */
 	public FlatFileReader(File file) throws StreamIOException {
 		super();
@@ -63,7 +65,8 @@ public class FlatFileReader implements StreamReader<String> {
 
 	/**
 	 * Constructor
-	 * @throws FileNotFoundException 
+	 * @param filePath
+	 * @throws FileNotFoundException
 	 */
 	public FlatFileReader(String filePath) throws FileNotFoundException {
 		super();

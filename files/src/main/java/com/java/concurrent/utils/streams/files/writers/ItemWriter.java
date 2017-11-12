@@ -17,33 +17,38 @@ import org.slf4j.LoggerFactory;
 import com.java.concurrent.utils.streams.common.StreamWriter;
 import com.java.concurrent.utils.streams.common.exceptions.StreamIOException;
 import com.java.concurrent.utils.streams.common.exceptions.StreamNullableAssignementException;
+import com.java.concurrent.utils.streams.files.writers.behaviors.ItemAggregator;
 
 /**
  * @author Fabrizio Torelli &lt;hellgate75@gmail.com&gt;
  *
  */
-public class FlatFileWriter implements StreamWriter<String> {
+public class ItemWriter<T> implements StreamWriter<T> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FlatFileWriter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ItemWriter.class);
 
 	private FileWriter writer;
 
 	private File file;
 
-	private final ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<T> queue = new ConcurrentLinkedQueue<>();
 
 	private boolean saving = false;
+	
+	private ItemAggregator<T> aggregator;
 
 	/**
 	 * Constructor
+	 * @param aggregator
 	 * @param filePath
 	 * @throws StreamIOException
 	 */
-	public FlatFileWriter(Path filePath) throws StreamIOException {
+	public ItemWriter(ItemAggregator<T> aggregator, Path filePath) throws StreamIOException {
 		super();
 		try {
 			file = filePath.toFile();
 			writer = new FileWriter(file);
+			this.aggregator=aggregator;
 			this.open();
 		} catch (Exception e) {
 			throw new StreamIOException(e);
@@ -52,14 +57,16 @@ public class FlatFileWriter implements StreamWriter<String> {
 
 	/**
 	 * Constructor
+	 * @param aggregator
 	 * @param file
 	 * @throws StreamIOException
 	 */
-	public FlatFileWriter(File file) throws StreamIOException {
+	public ItemWriter(ItemAggregator<T> aggregator, File file) throws StreamIOException {
 		super();
 		try {
 			this.file = file;
 			writer = new FileWriter(file);
+			this.aggregator=aggregator;
 			this.open();
 		} catch (Exception e) {
 			throw new StreamIOException(e);
@@ -68,14 +75,16 @@ public class FlatFileWriter implements StreamWriter<String> {
 
 	/**
 	 * Constructor
+	 * @param aggregator
 	 * @param filePath
 	 * @throws StreamIOException
 	 */
-	public FlatFileWriter(String filePath) throws StreamIOException {
+	public ItemWriter(ItemAggregator<T> aggregator, String filePath) throws StreamIOException {
 		super();
 		try {
 			file = new File(filePath);
 			writer = new FileWriter(file);
+			this.aggregator=aggregator;
 			this.open();
 		} catch (Exception e) {
 			throw new StreamIOException(e);
@@ -86,7 +95,7 @@ public class FlatFileWriter implements StreamWriter<String> {
 	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.lang.Object)
 	 */
 	@Override
-	public boolean write(String t) throws StreamNullableAssignementException, StreamIOException {
+	public boolean write(T t) throws StreamNullableAssignementException, StreamIOException {
 		if (t == null) {
 			throw new StreamNullableAssignementException("Line cannot be null");
 		}
@@ -106,7 +115,7 @@ public class FlatFileWriter implements StreamWriter<String> {
 	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.lang.Object[])
 	 */
 	@Override
-	public long write(String... t) throws StreamNullableAssignementException, StreamIOException {
+	public long write(@SuppressWarnings("unchecked") T... t) throws StreamNullableAssignementException, StreamIOException {
 		if (t == null) {
 			throw new StreamNullableAssignementException("Array cannot be null");
 		}
@@ -126,7 +135,7 @@ public class FlatFileWriter implements StreamWriter<String> {
 	 * @see com.java.concurrent.utils.streams.common.StreamWriter#write(java.util.Collection)
 	 */
 	@Override
-	public long write(Collection<String> t) throws StreamNullableAssignementException, StreamIOException {
+	public long write(Collection<T> t) throws StreamNullableAssignementException, StreamIOException {
 		if (t == null) {
 			throw new StreamNullableAssignementException("Collection cannot be null");
 		}
@@ -144,9 +153,11 @@ public class FlatFileWriter implements StreamWriter<String> {
 
 	private synchronized void saveToFile() {
 		String line = null;
+		T entity = null;
 		while (saving = !queue.isEmpty()) {
 			try {
-				line = queue.poll();
+				entity = queue.poll();
+				line = this.aggregator.map(entity);
 				if (line == null)
 					line = "";
 				writer.write(line);
@@ -155,7 +166,7 @@ public class FlatFileWriter implements StreamWriter<String> {
 			} catch (Exception e) {
 				LOGGER.error("Errors saving line to file", e);
 				if (line != null) {
-					queue.add(line);
+					queue.add(entity);
 				}
 				saving = false;
 				break;
